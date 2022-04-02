@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>  <!--mybatis配置文件-->
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<!-- changes from the defaults -->
+		<setting name="lazyLoadingEnabled" value="false" />
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+	
+	<typeAliases>
+		<typeAlias alias="User" type="com.mywork.bean.User" />
+		<typeAlias alias="Dict" type="com.mywork.bean.Dict" />
+		<typeAlias alias="Major" type="com.mywork.bean.Major" />
+		<typeAlias alias="Room" type="com.mywork.bean.Room" />
+		<typeAlias alias="Temp" type="com.mywork.bean.Temp" />
+		<typeAlias alias="Timetable" type="com.mywork.bean.Timetable" />
+	</typeAliases>
+</configuration>  <!-- -->

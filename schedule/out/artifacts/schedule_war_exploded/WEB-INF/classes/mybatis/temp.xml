@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>  <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mywork.mapper.TempMapper">
+	<resultMap type="Temp" id="tempMap">
+		<id property="id" column="id" />
+		<result property="id" column="id" />
+		<result property="roomid" column="roomid" />
+		<result property="a1" column="a1" />
+		<result property="a2" column="a2" />
+		<result property="a3" column="a3" />
+		<result property="a4" column="a4" />
+		<result property="b1" column="b1" />
+		<result property="b2" column="b2" />
+		<result property="b3" column="b3" />
+		<result property="b4" column="b4" />
+		<result property="c1" column="c1" />
+		<result property="c2" column="c2" />
+		<result property="c3" column="c3" />
+		<result property="c4" column="c4" />
+		<result property="d1" column="d1" />
+		<result property="d2" column="d2" />
+		<result property="d3" column="d3" />
+		<result property="d4" column="d4" />
+		<result property="e1" column="e1" />
+		<result property="e2" column="e2" />
+		<result property="e3" column="e3" />
+		<result property="e4" column="e4" />
+	</resultMap>
+	<select id="getList" parameterType="Map" resultType="List"
+		resultMap="tempMap">
+		SELECT * from temp WHERE 1=1
+		<if test="username != '' and username != null"> and username =
+			#{username} </if>
+		<if test="name != '' and name != null"> and name LIKE
+			CONCAT(CONCAT('%', #{name}), '%') </if>
+	</select>
+	<select id="getById" parameterType="String" resultType="Temp"
+		resultMap="tempMap"><![CDATA[  SELECT * from temp tmp WHERE tmp.id = #{id} ]]>
+	</select>
+	<insert id="insert" parameterType="Temp"><![CDATA[insert into temp( 
+id,roomid,a1,a2,a3,a4,b1,b2,b3,b4,c1,c2,c3,c4,d1,d2,d3,d4,e1,e2,e3,e4) values (#{id},#{roomid},#{a1},#{a2},#{a3},#{a4},#{b1},#{b2},#{b3},#{b4},#{c1},#{c2},#{c3},#{c4},#{d1},#{d2},#{d3},#{d4},#{e1},#{e2},#{e3},#{e4})
+]]></insert>
+	<update id="update" parameterType="Temp"><![CDATA[update temp set 
+id=#{id},roomid=#{roomid},a1=#{a1},a2=#{a2},a3=#{a3},a4=#{a4},b1=#{b1},b2=#{b2},b3=#{b3},b4=#{b4},c1=#{c1},c2=#{c2},c3=#{c3},c4=#{c4},d1=#{d1},d2=#{d2},d3=#{d3},d4=#{d4},e1=#{e1},e2=#{e2},e3=#{e3},e4=#{e4} where id = #{id}
+]]></update>
+	<delete id="delete" parameterType="String"><![CDATA[ delete from temp  WHERE id != 1 ]]></delete>
+</mapper>

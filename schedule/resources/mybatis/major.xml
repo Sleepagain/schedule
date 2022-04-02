@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>  <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mywork.mapper.MajorMapper">
+	<resultMap type="Major" id="majorMap"><!--建立间接映射将property和Colum进行映射-->
+		<id property="id" column="id" />
+		<result property="id" column="id" />
+		<result property="pid" column="pid" />
+		<result property="name" column="name" />
+		<result property="content" column="content" />
+		<result property="type" column="type" />
+		<result property="classes" column="classes" />
+	</resultMap>
+	<select id="getList" parameterType="Map" resultType="List"
+		resultMap="majorMap">
+		SELECT *,(select name from major where id = a.pid) collegename from major a WHERE 1=1
+		<if test="type != '' and type != null"> and type = #{type} </if>
+		<if test="pid != '' and pid != null"> and pid = #{pid} </if>
+		<if test="name != '' and name != null"> and name LIKE
+			CONCAT(CONCAT('%', #{name}), '%') </if>
+	</select>
+	<select id="getById" parameterType="String" resultType="Major"
+		resultMap="majorMap"><![CDATA[  SELECT *,(select name from major where id = a.pid) collegename from major a WHERE a.id = #{id} ]]>
+	</select>
+	<insert id="insert" parameterType="Major"><![CDATA[insert into major( 
+id,pid,name,content,type,classes) values (#{id},#{pid},#{name},#{content},#{type},#{classes})
+]]></insert>
+	<update id="update" parameterType="Major"><![CDATA[update major set 
+id=#{id},pid=#{pid},name=#{name},content=#{content},type=#{type},classes=#{classes} where id = #{id}
+]]></update>
+	<delete id="delete" parameterType="String"><![CDATA[ delete from major  WHERE id = #{id} ]]></delete>
+</mapper><!-- -->

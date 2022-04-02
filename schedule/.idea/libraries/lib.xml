@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/WebRoot/resources/kindeditor/jsp/lib/commons-fileupload-1.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/WebRoot/resources/kindeditor/jsp/lib/json_simple-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/WebRoot/resources/kindeditor/jsp/lib/commons-io-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../tomcat/apache-tomcat-7.0.81/lib/servlet-api.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

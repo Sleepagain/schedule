@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>  <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mywork.mapper.UserMapper">
+	<resultMap type="User" id="userMap">
+		<id property="id" column="id" />
+		<result property="id" column="id" />
+		<result property="no" column="no" />
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="birthday" column="birthday" />
+		<result property="tel" column="tel" />
+		<result property="sex" column="sex" />
+		<result property="post" column="post" />
+		<result property="email" column="email" />
+		<result property="isadmin" column="isadmin" />
+		<result property="status" column="status" />
+		<result property="college" column="college" />
+		<result property="major" column="major" />
+		<result property="classes" column="classes" />
+	</resultMap>
+
+	<select id="getList" resultType="List"  parameterType="Map" resultMap="userMap">  
+            SELECT *,(select name from major where id = a.college) collegename,(select name from major where id = a.major) majorname FROM user a where isadmin != 0 
+           	<if test="isadmin != '' and isadmin != null ">
+           		and isadmin =#{isadmin}
+           	</if>
+           	<if test="username != '' and username != null "> and username =#{username}
+           	</if>
+           	<if test="classes != '' and classes != null "> and classes =#{classes}
+           	</if>
+           	<if test="password != '' and password != null ">
+           		and password =#{password}
+           	</if>
+           	 <if test="status != '' and status != null ">
+           		and status =#{status}
+           	</if>
+           	 <if test="no != '' and no != null ">
+           		and no =#{no}
+           	</if>
+           	<if test="name != '' and name != null"> and name LIKE
+			CONCAT(CONCAT('%', #{name}), '%') </if>
+           	 <if test="ranorder != '' and ranorder != null ">
+           		order by RAND() LIMIT 1
+           	</if>
+	</select>
+
+	<!-- 用户登录时验证用户名密码 -->
+	<select id="getUserByNameAndPassword" parameterType="User" resultType="User" resultMap="userMap">  
+        <![CDATA[ 
+            SELECT * from user u 
+                WHERE u.username = #{username} and u.password=#{password} and isadmin = #{isadmin}
+        ]]>
+	</select>
+	<select id="getById" parameterType="String" resultType="User"
+		resultMap="userMap"><![CDATA[  SELECT * from user tmp WHERE tmp.id = #{id} ]]>
+	</select>
+	<insert id="insert" parameterType="User"><![CDATA[insert into user( 
+id,no,username,password,name,birthday,tel,sex,post,email,isadmin,status,college,major,classes) values (#{id},#{no},#{username},#{password},#{name},#{birthday},#{tel},#{sex},#{post},#{email},#{isadmin},#{status},#{college},#{major},#{classes})
+]]></insert>
+	<update id="update" parameterType="User"><![CDATA[update user set 
+id=#{id},no=#{no},username=#{username},password=#{password},name=#{name},birthday=#{birthday},tel=#{tel},sex=#{sex},post=#{post},email=#{email},isadmin=#{isadmin},status=#{status},college=#{college},major=#{major},classes=#{classes} where id = #{id}
+]]></update>
+	<delete id="delete" parameterType="String"><![CDATA[ delete from user  WHERE id = #{id} ]]></delete>
+</mapper><!-- -->
