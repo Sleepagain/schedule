@@ -43,4 +43,4 @@ id,roomid,a1,a2,a3,a4,b1,b2,b3,b4,c1,c2,c3,c4,d1,d2,d3,d4,e1,e2,e3,e4) values (#
 id=#{id},roomid=#{roomid},a1=#{a1},a2=#{a2},a3=#{a3},a4=#{a4},b1=#{b1},b2=#{b2},b3=#{b3},b4=#{b4},c1=#{c1},c2=#{c2},c3=#{c3},c4=#{c4},d1=#{d1},d2=#{d2},d3=#{d3},d4=#{d4},e1=#{e1},e2=#{e2},e3=#{e3},e4=#{e4} where id = #{id}
 ]]></update>
 	<delete id="delete" parameterType="String"><![CDATA[ delete from temp  WHERE id != 1 ]]></delete>
-</mapper>
+</mapper><!-- -->

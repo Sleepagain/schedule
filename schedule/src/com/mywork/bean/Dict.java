@@ -1,5 +1,8 @@
-package com.mywork.bean;//课程类
+package com.mywork.bean;
 
+/**
+ * 课程类
+ */
 public class Dict {
 	//课程id
 	private Integer id;
@@ -11,34 +14,64 @@ public class Dict {
 	private Integer beginweek;
 	//结束日期
 	private Integer endweek;
+	//课时
+	private Integer period;
+
+	public Integer getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(Integer period) {
+		this.period = period;
+	}
+
 	public Integer getId() {
+
 		return id;
 	}//实体类getter setter方法
 	public void setId(Integer id) {
+
 		this.id = id;
 	}
 	public String getType() {
+
 		return type;
 	}
 	public void setType(String type) {
+
 		this.type = type;
 	}
 	public String getDesc() {
+
 		return desc;
 	}
 	public void setDesc(String desc) {
+
 		this.desc = desc;
 	}
 	public Integer getBeginweek() {
+
 		return beginweek;
 	}
 	public void setBeginweek(Integer beginweek) {
+
 		this.beginweek = beginweek;
 	}
 	public Integer getEndweek() {
+
 		return endweek;
 	}
 	public void setEndweek(Integer endweek) {
+
 		this.endweek = endweek;
+	}
+
+	public String getTime() {
+		if(beginweek!=null){
+			return beginweek+"*"+endweek;
+		}else{
+			return period+"";
+		}
+
 	}
 }

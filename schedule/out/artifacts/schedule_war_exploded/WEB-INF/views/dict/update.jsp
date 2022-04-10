@@ -63,6 +63,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <input type="number" name="endweek" id="endweek" value="${dict.endweek}" />
                 </td>
             </tr>
+            <tr>
+                <td >开课结束周<font color="FF0000">*</font></td>
+                <td>
+                    <input type="number" name="endweek" id="period" value="${dict.period}" />
+                </td>
+            </tr>
         </tbody>
         <tfoot>
             <tr>

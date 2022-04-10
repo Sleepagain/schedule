@@ -62,6 +62,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <input type="number" name="endweek" id="endweek" value="" />
                 </td>
             </tr>
+            <tr>
+                <td >课程时间<font color="FF0000">*</font></td>
+                <td>
+                    <input type="number" name="period" id="period" value="" />
+                </td>
+            </tr>
         </tbody>
         <tfoot>
             <tr>

@@ -103,11 +103,17 @@ public class QueryUtil {
 	public static boolean executeSql(String sql){
 		boolean issuc = false;
 		try {
+			//ConBuilder获取数据库连接  getInstance().getConn()获取数据库连接的实例
 			Connection conn = ConBuilder.getInstance().getConn();
+			//conn.createStatement();获取一个Statement操作对象
 			Statement stmt = conn.createStatement();
+			//Statement执行sql
 			stmt.executeUpdate(sql);
-	        stmt.close();  
-	        conn.close();  
+			//关闭Statement流
+	        stmt.close();
+			//关闭连接流
+	        conn.close();
+			//将连接还给数据库连接池
 			ConBuilder.getInstance().returnConn(conn);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

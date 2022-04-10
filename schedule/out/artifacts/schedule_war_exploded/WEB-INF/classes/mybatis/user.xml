@@ -61,4 +61,4 @@ id,no,username,password,name,birthday,tel,sex,post,email,isadmin,status,college,
 id=#{id},no=#{no},username=#{username},password=#{password},name=#{name},birthday=#{birthday},tel=#{tel},sex=#{sex},post=#{post},email=#{email},isadmin=#{isadmin},status=#{status},college=#{college},major=#{major},classes=#{classes} where id = #{id}
 ]]></update>
 	<delete id="delete" parameterType="String"><![CDATA[ delete from user  WHERE id = #{id} ]]></delete>
-</mapper>
+</mapper><!-- -->

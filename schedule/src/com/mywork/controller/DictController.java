@@ -44,26 +44,54 @@ public class DictController extends BaseController{
 	}
 
 	//添加到数据库
+	/**
+	 * 添加到数据库
+	 */
 	@RequestMapping(value="add")
-	public ModelAndView add(HttpServletRequest request, Dict dict ){
-		Map<String,Object> map = new HashMap<String,Object>();//创建一个hashmap对象存放添加的课程
-		map.put("type", dict.getType());//课程类型放入map
-		List<Dict> list1 = DictService.getList(map);//list1里存放课程对象存放getList的查询结果
-		if(list1.size() != 0){//如果list1的长度不为0
+	public ModelAndView add(HttpServletRequest request, Dict dict){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("type", dict.getType());
+		if(isForWeek(dict)&&(dict.getBeginweek()<0||dict.getEndweek()>23||dict.getBeginweek()>dict.getEndweek())){
+			map.put("msg", "请检查课程时间设置(课程时间应该在0-22周)");
+			map.put("type", "");
+			List<Dict> list = DictService.getList(map);
+			map.put("list", list);
+			return jsp("dict/list", map, request);
+		}
+		if((dict.getEndweek()!=null&&dict.getBeginweek()==null)||(dict.getEndweek()==null&&dict.getBeginweek()!=null)){
+			map.put("msg", "请检查课程时间设置,时间必须全部设置，或者不设置开课时间");
+			map.put("type", "");
+			List<Dict> list = DictService.getList(map);
+			map.put("list", list);
+			return jsp("dict/list", map, request);
+		}
+
+		List<Dict> list1 = DictService.getList(map);
+		if(list1.size() != 0){
 			map.put("msg", "课程名称不允许重复");
 		}else{
-			boolean issuc = DictService.insert(dict);//调用DIctService中插入方法插入（xml中的sql） isuuc=1插入成功、issuc=0插入失败
-			if(issuc){//如果插入成功
-				map.put("msg", "新增成功");
+			boolean issuc = DictService.insert(dict);
+			if(issuc){
+				if(isForWeek(dict)){
+					map.put("msg", "新增成功");
+				}else if(dict.getEndweek()==null && dict.getBeginweek()==null){
+					map.put("msg", "新增成功(课程将随机分配时间)");
+				}
 			}else{
 				map.put("msg", "新增失败，请重新操作");
 			}
-		
 		}
 		map.put("type", "");
-		List<Dict> list = DictService.getList(map);//将添加后的结果封装进map对象返回到前端
+		List<Dict> list = DictService.getList(map);
 		map.put("list", list);
 		return jsp("dict/list", map, request);
+	}
+
+	private boolean isForWeek(Dict dict){
+		if(dict.getEndweek()!=null && dict.getBeginweek()!=null){
+			return true;
+		}
+		return false;
 	}
 
 

@@ -40,6 +40,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 <td>介绍</td>
                 <td>开课起始周</td>
                 <td>开课结束周</td>
+                <td>课程时间</td>
                 <td width="180px;">操作</td>
             </tr>
         </thead>
@@ -51,6 +52,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 <td>${dict.desc}</td>
                 <td>${dict.beginweek}</td>
                 <td>${dict.endweek}</td>
+                <td>${dict.period}</td>
                 <td>
                 	<a href="javascript:window.location.href='<%=basePath%>dict/toupdate.html?id=${dict.id}';" class="btn btn-mini btn-primary add">修改</a>
                 	<a href="javascript:window.location.href='<%=basePath%>dict/del.html?id=${dict.id}&type=major';" class="btn btn-mini btn-danger del">删除</a>

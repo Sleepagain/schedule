@@ -19,8 +19,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <link rel="stylesheet" href="<%=path %>/resources/kindeditor/themes/default/default.css" />
 	<script charset="utf-8" src="<%=path %>/resources/kindeditor/kindeditor-min.js"></script>
 	<script charset="utf-8" src="<%=path %>/resources/kindeditor/lang/zh_CN.js"></script>
-	<script type="text/javascript" src="<%=basePath%>resources/My97DatePicker/WdatePicker.js" defer="defer"></script>	
-	<link href="<%=basePath%>resources/My97DatePicker/skin/WdatePicker.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="<%=basePath%>resources/js/WdatePicker.js" defer="defer"></script>
+	<link href="<%=basePath%>resources/css/WdatePicker.css" type="text/css" rel="stylesheet" />
 <%--	<input type="text" id="d28" onClick="WdatePicker({dateFmt:'yyy/MM/dd'})"/>--%>
 	<script>
 	

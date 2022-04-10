@@ -46,4 +46,4 @@ id=#{id},majorid=#{majorid},classes=#{classes},teacherid=#{teacherid},roomid=#{r
 ]]></update>
 	<delete id="delete" parameterType="String"><![CDATA[ delete from timetable  WHERE id = #{id} ]]></delete>
 	<delete id="deleteall" parameterType="String"><![CDATA[ delete from timetable  WHERE id != 0 ]]></delete>
-</mapper>
+</mapper><!-- -->

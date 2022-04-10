@@ -9,6 +9,8 @@
 		<result property="type" column="type" />
 		<result property="classes" column="classes" />
 	</resultMap>
+
+<!--把所有专业信息取出来（pid：专业所对应的学院。）-->
 	<select id="getList" parameterType="Map" resultType="List"
 		resultMap="majorMap">
 		SELECT *,(select name from major where id = a.pid) collegename from major a WHERE 1=1
@@ -17,6 +19,9 @@
 		<if test="name != '' and name != null"> and name LIKE
 			CONCAT(CONCAT('%', #{name}), '%') </if>
 	</select>
+
+
+
 	<select id="getById" parameterType="String" resultType="Major"
 		resultMap="majorMap"><![CDATA[  SELECT *,(select name from major where id = a.pid) collegename from major a WHERE a.id = #{id} ]]>
 	</select>

@@ -25,4 +25,4 @@ id,name,address,personcount) values (#{id},#{name},#{address},#{personcount})
 id=#{id},name=#{name},address=#{address},personcount=#{personcount} where id = #{id}
 ]]></update>
 	<delete id="delete" parameterType="String"><![CDATA[ delete from room  WHERE id = #{id} ]]></delete>
-</mapper>
+</mapper><!-- -->
