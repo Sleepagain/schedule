@@ -34,29 +34,29 @@ public class SessionInteceptor implements HandlerInterceptor{
 		//设置session超时时间1分钟。
 		//request.getSession().setMaxInactiveInterval(60);
 		// noFilters内的action拦截器不拦截
-        String[] noFilters = new String[] {"download.html","tudizhenghe.html","xinyichaye.html","filmfestival.html", "yingshizhizuo.html", "dongmanzhizuo.html", "yingshixueyuan.html", "login.html", "main.html", "logout.html","index.html","filmdetail.html","video.html","yirendetail.html","aboutus.html","shiye.html","xinwen.html","xinwendetail.html","zuopin.html","shipin.html","biandao.html","biandaodetail.html","yiren.html","contact.html", };  
-		String url=request.getServletPath(); 
-		
+        String[] noFilters = new String[] {"download.html","tudizhenghe.html","xinyichaye.html","filmfestival.html", "yingshizhizuo.html", "dongmanzhizuo.html", "yingshixueyuan.html", "login.html", "main.html", "logout.html","index.html","filmdetail.html","video.html","yirendetail.html","aboutus.html","shiye.html","xinwen.html","xinwendetail.html","zuopin.html","shipin.html","biandao.html","biandaodetail.html","yiren.html","contact.html", };
+		String url=request.getServletPath();
+
 		//是否进入拦截器
-		boolean beFilter = true; 
+		boolean beFilter = true;
 		//log.debug("===================请求路径为："+url);
-		for (String s : noFilters) {  
-            if (url.indexOf(s) != -1) {  
-                beFilter = false;  
+		for (String s : noFilters) {
+            if (url.indexOf(s) != -1) {
+                beFilter = false;
                 break;
-            }  
+            }
         }
 		if(beFilter){
 			User sessionuser = (User)request.getSession().getAttribute(SessionKeys.LOGIN_USER);
 			if(null == sessionuser){
-				PrintWriter out = response.getWriter();  
-		        StringBuilder builder = new StringBuilder();  
-		        builder.append("<script type=\"text/javascript\" charset=\"GBK\">");  
-		        builder.append("alert(\"Login Timeout, please login again\");");  
-		        builder.append("window.top.location.href=\"");  
-		        builder.append("/film/login.html\";</script>");  
-		        out.print(builder.toString());  
-		        out.close();  
+				PrintWriter out = response.getWriter();
+		        StringBuilder builder = new StringBuilder();
+		        builder.append("<script type=\"text/javascript\" charset=\"GBK\">");
+		        builder.append("alert(\"Login Timeout, please login again\");");
+		        builder.append("window.top.location.href=\"");
+		        builder.append("/film/login.html\";</script>");
+		        out.print(builder.toString());
+		        out.close();
 		        return false;
 			}
 		}

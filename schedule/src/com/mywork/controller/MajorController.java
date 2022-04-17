@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -257,6 +259,12 @@ public class MajorController extends BaseController{
 		List<Major> list = MajorService.getList(map);
 		map.put("list", list);
 		return jsp("major/majorlist", map, request);
+	}
+
+	@RequestMapping(value="/getMajorBycollege")
+	public List<String> getMajorBycollege(HttpServletRequest request,String college){
+		List<String> list=MajorService.getMajorBycollege(college);
+		return list;
 	}
 
 }

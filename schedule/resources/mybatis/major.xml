@@ -25,6 +25,12 @@
 	<select id="getById" parameterType="String" resultType="Major"
 		resultMap="majorMap"><![CDATA[  SELECT *,(select name from major where id = a.pid) collegename from major a WHERE a.id = #{id} ]]>
 	</select>
+
+	<select id="getMajorBycollege" parameterType="String" resultType="List"
+			resultMap="majorMap"><![CDATA[  SELECT name FROM major WHERE TYPE="major" AND pid=#{college};]]>
+	</select>
+
+
 	<insert id="insert" parameterType="Major"><![CDATA[insert into major( 
 id,pid,name,content,type,classes) values (#{id},#{pid},#{name},#{content},#{type},#{classes})
 ]]></insert>
@@ -32,4 +38,6 @@ id,pid,name,content,type,classes) values (#{id},#{pid},#{name},#{content},#{type
 id=#{id},pid=#{pid},name=#{name},content=#{content},type=#{type},classes=#{classes} where id = #{id}
 ]]></update>
 	<delete id="delete" parameterType="String"><![CDATA[ delete from major  WHERE id = #{id} ]]></delete>
+
+
 </mapper><!-- -->

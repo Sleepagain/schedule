@@ -68,6 +68,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 <td>教室</td>
                 <td>教室地址</td>
                 <td>课程时间</td>
+                <td>起始周</td>
+                <td>结束周</td>
                 <td width="80px;">操作</td>
             </tr>
         </thead>
@@ -83,6 +85,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 <td>${timetable.room.name}</td>
                 <td>${timetable.room.address}</td>
                 <td>${timetable.week}第${timetable.time}节课</td>
+                <td>${timetable.start}</td>
+                <td>${timetable.end}</td>
                 <td>
                 	<a href="javascript:window.location.href='<%=basePath%>timetable/del.html?id=${timetable.id}&isadmin=1';" class="btn btn-mini btn-danger del">删除</a>
                 </td>

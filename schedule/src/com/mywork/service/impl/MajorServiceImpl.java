@@ -34,6 +34,11 @@ public class MajorServiceImpl implements MajorService{
 		return true;
 	}
 
+	@Override
+	public List<String> getMajorBycollege(String college) {
+		return MajorMapper.getMajorBycollege(college);
+	}
+
 	/**
 	 * 增加专业对象 返回是否成功
 	 */

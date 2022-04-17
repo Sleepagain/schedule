@@ -25,6 +25,26 @@ public class Timetable {
 	private String weekcounts;
 	//考试周
 	private Integer examweek;
+	//开始周
+	private Integer start;
+	//结束周
+	private Integer end;
+
+	public Integer getStart() {
+		return start;
+	}
+
+	public void setStart(Integer start) {
+		this.start = start;
+	}
+
+	public Integer getEnd() {
+		return end;
+	}
+
+	public void setEnd(Integer end) {
+		this.end = end;
+	}
 	public Major getMajor() {
 		return major;
 	}

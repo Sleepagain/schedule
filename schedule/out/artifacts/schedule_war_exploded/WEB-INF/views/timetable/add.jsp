@@ -54,7 +54,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			$.ajax({//
 				type:'post', 
 				async:false,
-				url:"<%=basePath%>major/getClassesBymajor.html",
+				url:'<%=basePath%>major/getClassesBymajor.html',
 				data: {"majorid":value},
 				dataType:'text',
 				success: function(data){

@@ -47,6 +47,7 @@ public interface TimetableService {
 	/**
 	 * 删除时间表对象
 	 */
+	@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED)
 	public void deleteall(String id);
 	
 }

@@ -28,4 +28,6 @@ public interface MajorMapper extends SqlMapper{
 	 * 删除
 	 */
 	public void delete(String id);
+
+    List<String> getMajorBycollege(String college);
 }

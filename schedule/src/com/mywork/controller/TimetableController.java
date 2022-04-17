@@ -1,11 +1,7 @@
 package com.mywork.controller;
 
 //课程排序控制层，主要的业务逻辑都在其中，主要负责于前端页面的交互
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -94,7 +90,7 @@ public class TimetableController extends BaseController{//继承
 		List<Obj> follow = new ArrayList<>();
 
 		//删除排课
-		tempService.delete("");
+		timetableService.deleteall("");
 		//组合 专业-课程-老师 5_马哲_41
 		map.put("type", "major");
 		List<Major> majorlist = majorService.getList(map);
@@ -129,17 +125,17 @@ public class TimetableController extends BaseController{//继承
 		//key: room_i_j    value:teacherId
 		Map<String, String> occDesc = new HashMap<>();
 		//找出当前最合适的时间（找出第一个即可返回）
-		int min=Integer.MAX_VALUE;
+
 		String index="";
 		//首先对具有时间限制的排课进行处理
 		for (Obj obj : priority) {
+			int min=Integer.MAX_VALUE;
 			String[] split = obj.getTime().split("\\*");
 			//确定了开始时间split[0]和结束时间split[1] 然后范围内搜索最合适的
 			for (int i = 0; i < free.size(); i++) {
 				for (int j = 0; j < free.get(i).size(); j++) {
 					List<Obj> objList = free.get(i).get(j);
-					if(compare(objList,split[0],split[1],j,roomlist,roomlist.get(i).getId(),
-							occDesc,obj.getName().split("_")[2]) && objList.size()<min){
+					if(compare(objList,split[0],split[1],j,roomlist,roomlist.get(i).getId(), occDesc,obj.getName().split("_")[2]) && objList.size()<=min){
 						index=i+"_"+j;
 						min=objList.size();
 					}
@@ -148,19 +144,19 @@ public class TimetableController extends BaseController{//继承
 			//已经找到了合适的教师 教师 时间， 进行占据
 			String[] sp = index.split("_");
 			List<Obj> list = free.get(Integer.valueOf(sp[0])).get(Integer.valueOf(sp[1]));
-			int in=0;
-			for (Obj c : list) {
+			Iterator<Obj> iterator = list.iterator();
+			for(Iterator<Obj> it=list.iterator(); it.hasNext();){
+				Obj c = it.next();
 				Integer cTime = Integer.valueOf(c.getTime());
 				Integer start = Integer.valueOf(split[0]);
 				Integer end = Integer.valueOf(split[1]);
 				if(cTime>=start-1 && cTime<=end-1){
-					list.remove(c);
-					occDesc.put(roomlist.get(Integer.valueOf(sp[0]))+"_"+sp[1]+"_"+in,obj.getName());
+					it.remove();
+					occDesc.put(roomlist.get(Integer.valueOf(sp[0])).getId()+"_"+sp[1]+"_"+cTime,obj.getName());
 				}
 				if(cTime>end-1){
 					break;
 				}
-				in++;
 			}
 			free.get(Integer.valueOf(sp[0])).set(Integer.valueOf(sp[1]),list);
 
@@ -168,13 +164,14 @@ public class TimetableController extends BaseController{//继承
 		//对具没有时间限制的排课进行处理
 		int st=0;
 		for (Obj obj : follow) {
+			int min=Integer.MAX_VALUE;
 			String time = obj.getTime();
 			for (int i = 0; i < free.size(); i++) {
 				for (int j = 0; j < free.get(i).size(); j++) {
 					List<Obj> objList = free.get(i).get(j);
 					Pair<Integer, Integer> pair = compare(objList, time, j, roomlist, roomlist.get(i).getId(),
 							occDesc, obj.getName().split("_")[2]);
-					if(pair.getKey()>=Integer.valueOf(obj.getTime()) && pair.getKey()<min){
+					if(pair.getKey()>=Integer.valueOf(obj.getTime()) && pair.getKey()<=min){
 						index=i+"_"+j;
 						min=objList.size();
 						st=pair.getValue();
@@ -184,31 +181,139 @@ public class TimetableController extends BaseController{//继承
 			//已经找到了合适的教师 教师 时间， 进行占据
 			String[] sp = index.split("_");
 			List<Obj> list = free.get(Integer.valueOf(sp[0])).get(Integer.valueOf(sp[1]));
-			for (int i = st; i < st+Integer.valueOf(time); i++) {
-				list.remove(st);
-				occDesc.put(roomlist.get(Integer.valueOf(sp[0]))+"_"+sp[1]+"_"+st,obj.getName());
+			Integer start = Integer.valueOf(list.get(st).getTime());
+			Integer end = Integer.valueOf(list.get(st+Integer.valueOf(time)-1).getTime());
+			Iterator<Obj> iterator = list.iterator();
+			for(Iterator<Obj> it=list.iterator(); it.hasNext();){
+				Obj c = it.next();
+				Integer cTime = Integer.valueOf(c.getTime());
+				if(cTime>=start && cTime<=end){
+					it.remove();
+					occDesc.put(roomlist.get(Integer.valueOf(sp[0])).getId()+"_"+sp[1]+"_"+cTime,obj.getName());
+				}
+				if(cTime>end){
+					break;
+				}
 			}
-
 			free.get(Integer.valueOf(sp[0])).set(Integer.valueOf(sp[1]),list);
-
 		}
-
-		return null;
-	}
-	//找出最大连续子序列的长度以及起始位置 最小损失
-	private Pair<Integer,Integer> compare(List<Obj> objList, String time, int i, List<Room> roomlist,
-										  int roomId, Map<String, String> map, String teacherId) {
-		int num=0;
-		int index=0;
-		Integer op = Integer.valueOf(time);
-
-		for (Obj obj : objList) {
-			if(Integer.valueOf(obj.getTime())>=op-1&&judge(i,index,roomlist,roomId,map,teacherId)){
-				num++;
+		//整理输出
+		Map<String, ArrayList<String>> resultMap = new HashMap<>();
+		for (Map.Entry<String, String> entry : occDesc.entrySet()) {
+			if(resultMap.containsKey(entry.getValue())){
+				ArrayList<String> list = resultMap.get(entry.getValue());
+				list.add(entry.getKey());
+				resultMap.put(entry.getValue(),list);
+			}else{
+				ArrayList<String> list = new ArrayList<>();
+				list.add(entry.getKey());
+				resultMap.put(entry.getValue(),list);
 			}
-			index++;
 		}
-		return new Pair<Integer, Integer>(3,3);
+		Map<Integer, Major> majorMap = new HashMap<>();
+		for (Major major : majorlist) {
+			majorMap.put(major.getId(),major);
+		}
+		Map<Integer, Room> roomMap = new HashMap<>();
+		for (Room room : roomlist) {
+			roomMap.put(room.getId(),room);
+		}
+		List<Timetable> timetableList = new ArrayList<>();
+		for (Map.Entry<String, ArrayList<String>> entry : resultMap.entrySet()) {
+			Timetable timetable = new Timetable();
+			timetable.setMajor(majorMap.get(Integer.valueOf(entry.getKey().split("_")[0])));
+			timetable.setMajorid(Integer.valueOf(entry.getKey().split("_")[0]));
+			timetable.setRoom(roomMap.get(Integer.valueOf(entry.getValue().get(0).split("_")[0])));
+			timetable.setRoomid(Integer.valueOf(entry.getValue().get(0).split("_")[0]));
+			timetable.setClasses(entry.getKey().split("_")[1]);
+			timetable.setTeacher(userService.getUserById(entry.getKey().split("_")[2]));
+			timetable.setTeacherid(Integer.valueOf(entry.getKey().split("_")[2]));
+
+			ArrayList<String> value = entry.getValue();
+			value.sort(new Comparator<String>() {
+				@Override
+				public int compare(String o1, String o2) {
+					return Integer.valueOf(o1.split("_")[2])-Integer.valueOf(o2.split("_")[2]);
+				}
+			});
+
+			int w = Integer.valueOf(value.get(0).split("_")[1]) / OneDay + 1;
+			String we="";
+			switch(w){
+				case 1:
+					we="周一";
+				case 2:
+					we="周二";
+				case 3:
+					we="周三";
+				case 4:
+					we="周四";
+				case 5:
+					we="周五";
+			}
+
+			timetable.setTime(Integer.valueOf(value.get(0).split("_")[1])%OneDay +1 +"");
+			timetable.setWeek(we);
+			timetable.setStart(Integer.valueOf(value.get(0).split("_")[2])+1);
+			timetable.setEnd(Integer.valueOf(value.get(0).split("_")[2])+value.size());
+			timetableList.add(timetable);
+		}
+		//离散化
+
+		//插入到数据库
+		for (Timetable timetable : timetableList) {
+			timetableService.insert(timetable);
+		}
+		//分页展示
+		String pagerNum = request.getParameter("pagerNum");
+		if(pagerNum==null){
+			pagerNum = "1";
+		}
+
+		map.put("count", timetableList.size());
+		map.put("maxPager", timetableList.size()/PagerUtil.getPagerSize()+1);
+		timetableList = (List<Timetable>) PagerUtil.getPager(timetableList, Integer.parseInt(pagerNum));
+		map.put("pagerNum", pagerNum);
+		map.put("list", timetableList);
+		return jsp("timetable/list", map, request);
+
+	}
+
+	//找出最小连续子序列的长度以及起始位置 最小损失
+	private Pair<Integer,Integer> compare(List<Obj> objList, String time, int index, List<Room> roomlist,
+										  int roomId, Map<String, String> map, String teacherId) {
+		ArrayList<Integer> nums = new ArrayList<>();
+		for (int i = 0; i < objList.size(); i++) {
+			Integer c = Integer.valueOf(objList.get(i).getTime());
+			if(judge(index,c,roomlist,roomId,map,teacherId)){
+				nums.add(c);
+			}
+		}
+		Integer k = Integer.valueOf(time);
+		int res=0;
+		int len=1;
+		int end=nums.size()-1;
+		for (int i = 1; i < nums.size(); i++) {
+			if(nums.get(i)==nums.get(i-1)+1){
+				len++;
+			}
+			else {
+				len=1;
+
+			}
+			if(res<len){
+				res=len;
+				end=i;
+			}
+		}
+		System.out.println(res);
+		System.out.println(end-res+1);
+		if(res>=k){
+			return new Pair<Integer, Integer>(res,end-res+1);
+		}else{
+			return new Pair<Integer, Integer>(-1,-1);
+		}
+
 	}
 
 
@@ -220,14 +325,13 @@ public class TimetableController extends BaseController{//继承
 		Integer op = Integer.valueOf(begin);
 		Integer ed = Integer.valueOf(end);
 		for (Obj obj : objList) {
-			if(Integer.valueOf(obj.getTime())>=op-1&&
-					Integer.valueOf(obj.getTime())<=ed-1 &&judge(i,index,roomlist,roomId,map,teacherId)){
+			int time=Integer.valueOf(obj.getTime());
+			if(time>=op-1&& time<=ed-1 &&judge(i,time,roomlist,roomId,map,teacherId)){
 				num++;
 			}
 			if(Integer.valueOf(obj.getTime())>ed-1){
 				break;
 			}
-			index++;
 		}
 		if(num==(ed-op+1)){
 			return true;
@@ -244,6 +348,7 @@ public class TimetableController extends BaseController{//继承
 				for (int q = 0; q < WEEKS; q++) {
 					oList.add(new Obj("",q+""));
 				}
+				rList.add(oList);
 			}
 			free.add(rList);
 		}
@@ -259,7 +364,7 @@ public class TimetableController extends BaseController{//继承
 			}
 		}
 		for (Integer temp : list) {
-			if(teacherId.equals(map.get(temp+"_"+i+"_"+j).split("_")[2])){
+			if(teacherId.equals(map.get(temp+"_"+i+"_"+j)==null?null:map.get(temp+"_"+i+"_"+j).split("_")[2])){
 				return false;
 			}
 
@@ -270,7 +375,7 @@ public class TimetableController extends BaseController{//继承
 
 	//	列表
 	//先把专业课程老师三个限制条件组合在一起，再把组合体塞到教室
-	@RequestMapping(value="auto")
+	@RequestMapping(value="auto2")
 	public ModelAndView auto(HttpServletRequest request){
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<String> infolist = new ArrayList<String>();//目前已经记录的排课信息
@@ -704,10 +809,10 @@ public class TimetableController extends BaseController{//继承
 	public ModelAndView toadd(HttpServletRequest request){
 		Map<String,Object> map = new HashMap<String,Object>();
 		//院系专业
-		map.put("type", "major");
-		map.put("majorlist", majorService.getList(map));
 		map.put("type", "college");
 		map.put("collegelist", majorService.getList(map));
+		map.put("majorlist", majorService.getList(map));
+		map.put("type", "college");
 		map.put("roomlist", roomService.getList(map));
 		return jsp("timetable/add", map, request);
 	}

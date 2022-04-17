@@ -100,7 +100,7 @@ public class DictController extends BaseController{
 	public ModelAndView toupdate(HttpServletRequest request){
 		Map<String,Object> map = new HashMap<String,Object>();
 		Dict Dict = DictService.getDictById(request.getParameter("id"));//通过id查询课程，并将课程名称取出
-	map.put("dict", Dict);
+		map.put("dict", Dict);
 		return jsp("dict/update", map, request);
 	}
 
