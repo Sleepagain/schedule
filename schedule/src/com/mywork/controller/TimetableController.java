@@ -40,7 +40,9 @@ public class TimetableController extends BaseController{//继承
 	private DictService dictService;
 
 	class Obj{
+		//组合： 专业-课程-老师 5_马哲_41
 		private String name;
+		//时间
 		private String time;
 
 		public Obj(String name, String time) {
@@ -65,20 +67,18 @@ public class TimetableController extends BaseController{//继承
 		}
 	}
 
-	private static Integer WEEKS=23;
+	private static Integer WEEKS=23;//周数
 
-	private static Integer OneDay=4;
-
-	private static Integer SEVERAL=2;
+	private static Integer OneDay=4;//一天的课数
 
 
 	/* 每个list的元素 都是 node  属性为 node index 和  描述信息（包含 课程 老师 专业）
 	 *
-	 * 有一个List<List>形式如：   0   20  40  60....    440     未被占用的     在需要占用的时候首先要确认 是否是连续的
-	 *                           1   21  41  61...     441
+	 * 有一个List<List>形式如：   0   1  2  3....    WEEKS     未被占用的     在需要占用的时候首先要确认 是否是连续的
+	 *                         0   1  2  3...     WEEKS
 	 *
-	 * 有一个List<List>形式如：   0   20  40  60....    440     已经占用的
-	 *                           1   21  41  61...     441
+	 * 有一个List<List>形式如：   0   1  2  3....    WEEKS     已经占用的
+	 *                         0   1  2  3...     WEEKS
 	 *                           占据的list中 还要有属性描述，  那些老师已经占据了哪些课程
 	 *                      	 在空闲的list占用的时候 需要去掉老师的相应时间
 	 */
@@ -89,13 +89,13 @@ public class TimetableController extends BaseController{//继承
 		List<Obj> priority = new ArrayList<>();
 		List<Obj> follow = new ArrayList<>();
 
-		//删除排课
+		//删除原有排课
 		timetableService.deleteall("");
-		//组合 专业-课程-老师 5_马哲_41
+
+		                                                       /*组合 专业-课程-老师 5_马哲_41*/
 		map.put("type", "major");
 		List<Major> majorlist = majorService.getList(map);
 		//获取名称 时间 的map
-//		Map<String, String> collect = dictService.getList(null).stream().collect(Collectors.toMap(Dict::getType, Dict::getTime));
 		Map<String, String> collect=new HashMap<>();
 		for (Dict dict : dictService.getList(null)) {
 			collect.put(dict.getType(),dict.getTime());
@@ -111,19 +111,24 @@ public class TimetableController extends BaseController{//继承
 					User user = userService.getList(map).get(0);
 					String time = collect.get(classes);
 					if(time.contains("*")){
-						priority.add(new Obj(major.getId()+"_"+classes+"_"+user.getId(),time));
+						priority.add(new Obj(major.getId()+"_"+classes+"_"+user.getId(),time));//以*标示priority（有开始和结束周限制的课程）
 					}else{
-						follow.add(new Obj(major.getId()+"_"+classes+"_"+user.getId(),time));
+						follow.add(new Obj(major.getId()+"_"+classes+"_"+user.getId(),time));//没有开始周和结束周限制的课程
 					}
 				}
 			}
 		}
-		Collections.shuffle(priority);
+
+
+		
+		Collections.shuffle(priority);//两种课程的list集合打散
 		Collections.shuffle(follow);
-		List<Room> roomlist = roomService.getList(map);
-		List<List<List<Obj>>> free = init(roomlist.size());
+
+
+		List<Room> roomlist = roomService.getList(map);//教室集合
+		List<List<List<Obj>>> free = init(roomlist.size());//初始化一个三维list集合：一维是一共有几个教室、二维是每周有多少节课、第三维是哪些周还可以被安排
 		//key: room_i_j    value:teacherId
-		Map<String, String> occDesc = new HashMap<>();
+		Map<String, String> occDesc = new HashMap<>();//记录老师上课信息、包括room_i_j：哪一周和哪一节课，teacherId：老师在数据库中的id
 		//找出当前最合适的时间（找出第一个即可返回）
 
 		String index="";
@@ -135,15 +140,17 @@ public class TimetableController extends BaseController{//继承
 			for (int i = 0; i < free.size(); i++) {
 				for (int j = 0; j < free.get(i).size(); j++) {
 					List<Obj> objList = free.get(i).get(j);
+//					compare函数：判断是否能占用这个时间段（这个时间还能排的周数大于这门课的周数）；objList.size()<=min：判断是否是最节省的
 					if(compare(objList,split[0],split[1],j,roomlist,roomlist.get(i).getId(), occDesc,obj.getName().split("_")[2]) && objList.size()<=min){
-						index=i+"_"+j;
-						min=objList.size();
+						index=i+"_"+j;//index i j：表示i是哪一周 j是第几节课
+						min=objList.size(); //如果能占用、判断这个时间段是不是确保最少算法
 					}
 				}
 			}
 			//已经找到了合适的教师 教师 时间， 进行占据
 			String[] sp = index.split("_");
-			List<Obj> list = free.get(Integer.valueOf(sp[0])).get(Integer.valueOf(sp[1]));
+			List<Obj> list = free.get(Integer.valueOf(sp[0])).get(Integer.valueOf(sp[1]));// 哪些周可以被这门课占据
+			//迭代器：取出list里面的对象
 			Iterator<Obj> iterator = list.iterator();
 			for(Iterator<Obj> it=list.iterator(); it.hasNext();){
 				Obj c = it.next();
@@ -151,14 +158,14 @@ public class TimetableController extends BaseController{//继承
 				Integer start = Integer.valueOf(split[0]);
 				Integer end = Integer.valueOf(split[1]);
 				if(cTime>=start-1 && cTime<=end-1){
-					it.remove();
-					occDesc.put(roomlist.get(Integer.valueOf(sp[0])).getId()+"_"+sp[1]+"_"+cTime,obj.getName());
+					it.remove();//删去被占据的时间段
+					occDesc.put(roomlist.get(Integer.valueOf(sp[0])).getId()+"_"+sp[1]+"_"+cTime,obj.getName());//记录被哪个老师占据
 				}
 				if(cTime>end-1){
 					break;
 				}
 			}
-			free.get(Integer.valueOf(sp[0])).set(Integer.valueOf(sp[1]),list);
+			free.get(Integer.valueOf(sp[0])).set(Integer.valueOf(sp[1]),list);// 把已经排好课的时间段放入三维list中（更新三维list）
 
 		}
 		//对具没有时间限制的排课进行处理
@@ -280,7 +287,7 @@ public class TimetableController extends BaseController{//继承
 	}
 
 	//找出最小连续子序列的长度以及起始位置 最小损失
-	private Pair<Integer,Integer> compare(List<Obj> objList, String time, int index, List<Room> roomlist,
+	private Pair<Integer,Integer> compare(List<Obj> objList, String time, int index, List<Room> roomlist,//没有限制开始结束周课程的compare
 										  int roomId, Map<String, String> map, String teacherId) {
 		ArrayList<Integer> nums = new ArrayList<>();
 		for (int i = 0; i < objList.size(); i++) {
@@ -316,9 +323,9 @@ public class TimetableController extends BaseController{//继承
 
 	}
 
-
+	//有限制开始结束周课程的compare
 	private boolean compare(List<Obj> objList, String begin, String end,int i,List<Room> roomlist,
-							int roomId,Map<String, String> map,String teacherId){
+							int roomId,Map<String, String> map,String teacherId){//i：第几节课 map：老师占据的时间段描述
 
 		int num=0;
 		int index=0;
@@ -326,7 +333,7 @@ public class TimetableController extends BaseController{//继承
 		Integer ed = Integer.valueOf(end);
 		for (Obj obj : objList) {
 			int time=Integer.valueOf(obj.getTime());
-			if(time>=op-1&& time<=ed-1 &&judge(i,time,roomlist,roomId,map,teacherId)){
+			if(time>=op-1&& time<=ed-1 &&judge(i,time,roomlist,roomId,map,teacherId)){//判断这个空闲周、是否在开始周和结束周之间 &&这个时间段 该老师是否在别的教室上课
 				num++;
 			}
 			if(Integer.valueOf(obj.getTime())>ed-1){
@@ -356,7 +363,6 @@ public class TimetableController extends BaseController{//继承
 	}
 	//同一时刻的其他房间 该老师不在授课
 	private boolean judge(int i, int j,List<Room> roomlist,int roomId,Map<String, String> map,String teacherId){
-		//List<Integer> list = roomlist.stream().map(Room::getId).filter(rs-> rs!=roomId).collect(Collectors.toList());
 		ArrayList<Integer> list = new ArrayList<>();
 		for (Room room : roomlist) {
 			if(room.getId()!=roomId){
